@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Deck</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/telegram-web-app/6.7.0/telegram-web-app.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body {
+font-family: 'Press Start 2P', cursive;
+background-color: #000;
+color: #fff;
+margin: 0;
+padding: 0;
+}
+
+.container {
+max-width: 800px;
+margin: 0 auto;
+padding: 20px;
+}
+
+h1 {
+text-align: center;
+font-size: 24px;
+margin-bottom: 20px;
+text-shadow: 2px 2px 0 #ff00ff;
+}
+
+.game-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+gap: 20px;
+}
+
+.game-card {
+background-color: #222;
+border: 4px solid #00ff00;
+border-radius: 8px;
+overflow: hidden;
+transition: transform 0.3s ease;
+}
+
+.game-card:hover {
+transform: scale(1.05);
+}
+
+.game-thumb {
+width: 100%;
+height: 100px;
+object-fit: cover;
+image-rendering: pixelated;
+}
+
+.game-title {
+padding: 10px;
+font-size: 12px;
+text-align: center;
+color: #00ff00;
+}
+
+.pixel-button {
+display: inline-block;
+padding: 10px 20px;
+background-color: #00ff00;
+color: #000;
+text-decoration: none;
+font-size: 14px;
+border: none;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+.pixel-button:hover {
+background-color: #ff00ff;
+}
+
+.modal {
+display: none;
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+background-color: #222;
+margin: 15% auto;
+padding: 20px;
+border: 4px solid #00ff00;
+width: 80%;
+max-width: 600px;
+}
+
+.close {
+color: #00ff00;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+
+.close:hover {
+color: #ff00ff;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Retro Deck</h1>
+<div class="game-grid" id="gameGrid"></div>
+</div>
+
+<div id="gameModal" class="modal">
+<div class="modal-content">
+<span class="close">&times;</span>
+<h2 id="modalTitle"></h2>
+<p id="modalDescription"></p>
+<p id="modalInstructions"></p>
+<button class="pixel-button" id="playButton">Play Game</button>
+</div>
+</div>
+
+<script>
+const games = [
+{"id":"4865","title":"Hero Rescue Puzzle","description":"Do you like rescue games? Of course, they are great. Help the hero rescue to save the princess and get the treasure in the new hero wars game - Hero Rescue. Shoot the sticks to save the princess, to kill the goblins, to get a treasure, ... You will become a rich hero in this township rescue game.","instructions":"Mouse control","url":"https://html5.gamemonetize.com/3596x93682lmj4cn7mrtldmfhviig7jj/","category":"Puzzles","tags":"Action, Boys, Fun, Girls, HTML5, Logic, Puzzle","thumb":"https://img.gamemonetize.com/3596x93682lmj4cn7mrtldmfhviig7jj/512x384.jpg","width":"800","height":"600"},
+{"id":"13555","title":"Pou Online","description":"Do you have what it takes to take care of your very own alien pet? Feed and take care of Pou.","instructions":"Mouse control","url":"https://html5.gamemonetize.com/jyeazqa0x7ym5xcq22g9mgv74s5tift1/","category":"Puzzles","tags":"Boys, Girls, HTML5","thumb":"https://img.gamemonetize.com/jyeazqa0x7ym5xcq22g9mgv74s5tift1/512x384.jpg","width":"800","height":"600"},
+{"id":"6152","title":"Among Us Online Edition","description":"Welcome to game Among Us Online Edition - game based on Among Us, but in this game you can play only solo and as imposter on the space ship. You can do sabotage on spaceship or killing them one by one and without being caught. Have a nice game!","instructions":"Use mouse to play","url":"https://html5.gamemonetize.com/luye5rleios737wp2o9wjq7h577gl937/","category":"Arcade","tags":"1 Player, Action, Arcade, Multiplayer, Shooter, Shooting","thumb":"https://img.gamemonetize.com/luye5rleios737wp2o9wjq7h577gl937/512x384.jpg","width":"800","height":"600"},
+{"id":"15409","title":"Bike Race Rush","description":"Whether you're a boy or a girl, there are plenty of FUNKY characters to satisfy and lots of cool bikes to earn! Collect coins, complete quests, pass rank and so on! Updated with the coolest features and content of the game, you'll love doing flips, tricks and stunts on the slopes while testing your reactions to speeding around town! This is not your average running game! It's faster, it's smoother, it's the best player, it's bike impact!","instructions":"Mouse or click to play ","url":"https://html5.gamemonetize.com/4bb52narsr9s57z5y7qlch5zhupiucld/","category":"Adventure","tags":"Action, Adventure, Baby, Baby Hazel, Boy, Classic, Driving, Hypercasual, subway, Superhero, Traffic","thumb":"https://img.gamemonetize.com/4bb52narsr9s57z5y7qlch5zhupiucld/512x384.jpg","width":"720","height":"1280"},
+{"id":"4995","title":"Super RunCraft","description":"Super RunCraft is a wonderful 3D Run Game, run through a long minecraft land to collect rows of golden coins, number of special items such as Hoveboard along your running lane and avoid the obstacles in your way. The classic style endless running game that always gives you a big fantastic mincraf fun.","instructions":"Arrow keys or Touch For Play","url":"https://html5.gamemonetize.com/syoymgm7jw290t7mz0hpqjqmc8yqlmrd/","category":"Arcade","tags":"Kiz 10, kiz10, running","thumb":"https://img.gamemonetize.com/syoymgm7jw290t7mz0hpqjqmc8yqlmrd/512x384.jpg","width":"525","height":"700"},
+{"id":"10521","title":"Skate Hooligans","description":"Cowabunga! Little hooligans are on the way! Choose your hero and arrange an amazing disorder ^_^ Collect coins, upgrade bonuses, buy cool skateboards, avoid dangerous obstacles and get scores as much as you can.","instructions":"Arrows Swipes to move","url":"https://html5.gamemonetize.com/vy07es6s71vci1su3wzcqrp7e3ym0vtw/","category":"Arcade","tags":"3D, 3D Games, Action, Arcade, Best, city, endless, Highscore, Kids, run, running, Skateboard, subway, Subway Surfers, WebGL","thumb":"https://img.gamemonetize.com/vy07es6s71vci1su3wzcqrp7e3ym0vtw/512x384.jpg","width":"800","height":"600"},
+{"id":"15736","title":"Squid Game Challenge 3D","description":"Invite to Squid Game. Invite to a fair game of Red lights, eco-friendly lights. Whoever wins this game will win a great deal of prize money. Stop at the red light. Continue when the thumbs-up is on. Follow your personality's head motions! Do not rush Red Light, Green Light Sugar Honeycombs Tug-of-war Marbles Glass Stepping Stones The Squid Game Experience the delights of the craze that's sweeping the globe by your pc!","instructions":"Mouse Control","url":"https://html5.gamemonetize.com/dtemvyguxvsbdnnoilu3s1ygg8umdbvt/","category":"Shooting","tags":".io Games, 1 Player, 2 Player Games, 3D Games, Action, Adventure, Best, Game, Games, Kill, Killing, Online, Shoot, Shoot 'Em Up, Shooter, Shooting","thumb":"https://img.gamemonetize.com/dtemvyguxvsbdnnoilu3s1ygg8umdbvt/512x384.jpg","width":"600","height":"900"},
+{"id":"6079","title":"Among Us Space Rush","description":"Play Among Us Rush now on kiz10.com !!! A new game comes to the best style and with the characters of Among Us run and do not stop running through the dangerous platforms of the different levels of the game, be very careful because you could fall off the cliff or collide with different obstacles such as bombs, objects that will block your way. Have fun with this new addictive entertaining game exclusive to kiz10.com !! remember that we have exclusive games every week and new games for free every day. In Among Us Rush the objective of the game is to reach the goal of each level with the greatest number of characters but be careful it is not as easy as it seems on your way you will run into thousands of dangers, try to finish each level with a better score on your On the way you can unlock different achievements with which you can improve your gaming skills or unlock many more gifts. Enjoy this addictive and exciting adventure game play for free on your favorite mobile device, tablet or desktop computer. The game is very easy to play, simply control the characters with the mouse or by touching the screen of your mobile device.","instructions":"Use Mouse or Touch Screen","url":"https://html5.gamemonetize.com/3iaqi4b196ujgycgvjnxhegwcj0y4617/","category":"Hypercasual","tags":"Jumping, Kiz 10, kiz10, running","thumb":"https://img.gamemonetize.com/3iaqi4b196ujgycgvjnxhegwcj0y4617/512x384.jpg","width":"800","height":"500"},
+{"id":"4392","title":"12 MiniBattles","description":"12 MiniBattles is a fun multiplayer game where you and a friend can play against each other on a variety of games. This physics style game has different game types that you can play at random including a soccer match and sniper warfare. All of the different games have a one-button control system making them easy to play for the maximum amount of fun. This addictive gameplay will keep you and a friend entertained for hours. Play all the games and spend hours getting the better of your friends. Have fun and win every game!","instructions":"Player 1 use A Player 2 use L","url":"https://html5.gamemonetize.com/nuiyi3o2g6fktyjda55g42v3qe5a3hbq/","category":"Arcade","tags":"2 Player, 2 Player Games, 2D, Arcade, Family, Flight, Retro","thumb":"https://img.gamemonetize.com/nuiyi3o2g6fktyjda55g42v3qe5a3hbq/512x384.jpg","width":"1280","height":"720"},
+{"id":"6382","title":"Among Us Christmas Run","description":"Christmas is coming! Let us collect gifts for the holiday! But there are stoping cars and obstacles stopping us. Avoid them, or collect dwarfs to get a shield. Start running now!","instructions":"direction keys to move","url":"https://html5.gamemonetize.com/2zl80gyxb8wow5mthrawir5la9h52fa5/","category":"Arcade","tags":"Avoid, Boys, Christmas, Collecting, Game, Games, H5, Holiday, HTML, HTML5, Kid, Kids, Obstacle, run, running, Skills, Sport, Sports","thumb":"https://img.gamemonetize.com/2zl80gyxb8wow5mthrawir5la9h52fa5/512x384.jpg","width":"750","height":"1334"},
+{"id":"3921","title":"Tom & Jerry Run","description":"Tom and Jerry Run is fun endless runner game such as subway surfers! Run with Jerry throught subway city and jump over obstacles to collect gold coins as in talking tom gold run!","instructions":"Use mouse or keyboard","url":"https://html5.gamemonetize.com/a6d9kqfsjxbpdktw6p8j11z8bm776t8h/","category":"Action","tags":".io, 3D, 3D Games, endless, run, running, subway, Subway Surfers, surfers","thumb":"https://img.gamemonetize.com/a6d9kqfsjxbpdktw6p8j11z8bm776t8h/512x384.jpg","width":"800","height":"600"}
+];
+
+const gameGrid = document.getElementById('gameGrid');
+const modal = document.getElementById('gameModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalDescription = document.getElementById('modalDescription');
+const modalInstructions = document.getElementById('modalInstructions');
+const playButton = document.getElementById('playButton');
+const closeButton = document.getElementsByClassName('close')[0];
+
+function createGameCard(game) {
+const card = document.createElement('div');
+card.className = 'game-card';
+card.innerHTML = `
+<img src="${game.thumb}" alt="${game.title}" class="game-thumb">
+<div class="game-title">${game.title}</div>
+`;
+card.addEventListener('click', () => showGameDetails(game));
+return card;
+}
+
+function showGameDetails(game) {
+modalTitle.textContent = game.title;
+modalDescription.textContent = game.description;
+modalInstructions.textContent = `Instructions: ${game.instructions}`;
+playButton.onclick = () => window.open(game.url, '_blank');
+modal.style.display = 'block';
+}
+
+closeButton.onclick = () => {
+modal.style.display = 'none';
+}
+
+window.onclick = (event) => {
+if (event.target == modal) {
+modal.style.display = 'none';
+}
+}
+
+games.forEach(game => {
+gameGrid.appendChild(createGameCard(game));
+});
+
+// Telegram Web App initialization
+window.Telegram.WebApp.ready();
+window.Telegram.WebApp.expand();
+</script>
+</body>
+</html>
