@@ -112,6 +112,19 @@ color: #ff00ff;
 </style>
 </head>
 <body>
+<div class="header">
+    <label for="game-search" class="visually-hidden">Search games</label>
+    <input type="text" id="game-search" class="search-bar" placeholder="Search games...">
+    <img src="Interface-Essential-Face-Id-1--Streamline-Pixel.png" alt="Profile" class="profile-icon">
+</div>
+<nav class="category-slider">
+    <button class="category-item active">All</button>
+    <button class="category-item">Arcade</button>
+    <button class="category-item">Action</button>
+    <button class="category-item">Puzzle</button>
+    <button class="category-item">Strategy</button>
+</nav>
+
 <div class="container">
 <h1>Retro Deck</h1>
 <div class="game-grid" id="gameGrid"></div>
@@ -183,9 +196,66 @@ games.forEach(game => {
 gameGrid.appendChild(createGameCard(game));
 });
 
-// Telegram Web App initialization
+<!-- Telegram Web App initialization -->
+<script>
 window.Telegram.WebApp.ready();
 window.Telegram.WebApp.expand();
 </script>
+
+<!-- Bottom Bar -->
+<div class="bottom-bar">
+    <div class="bottom-bar-item">
+        <img src="Entertainment-Events-Hobbies-Game-Machines-Arcade-1--Streamline-Pixel.png" alt="Games" class="bottom-bar-icon">
+        <div>Games</div>
+    </div>
+    <div class="bottom-bar-item">
+        <img src="ICON/Money-Payments-Diamond--Streamline-Pixel.png" alt="Tasks" class="bottom-bar-icon">
+        <div>Tasks</div>
+    </div>
+    <div class="bottom-bar-item">
+        <img src="Business-Products-Wallet-Money--Streamline-Pixel.png" alt="Wallet" class="bottom-bar-icon">
+        <div>Wallet</div>
+    </div>
+    <div class="bottom-bar-item">
+        <img src="Multiple-User--Streamline-Pixel.png" alt="Friends" class="bottom-bar-icon">
+        <div>Friends</div>
+    </div>
+</div>
+
+<!-- اسکریپت اصلی -->
+<script>
+const searchBar = document.querySelector('.search-bar');
+const categoryItems = document.querySelectorAll('.category-item');
+
+searchBar.addEventListener('input', filterGames);
+categoryItems.forEach(item => item.addEventListener('click', filterByCategory));
+
+function filterGames() {
+    const searchTerm = searchBar.value.toLowerCase();
+    const activeCategory = document.querySelector('.category-item.active').textContent;
+
+    games.forEach((game, index) => {
+        const card = gameGrid.children[index];
+        const titleMatch = game.title.toLowerCase().includes(searchTerm);
+        const categoryMatch = activeCategory === 'All' || game.category === activeCategory;
+        card.style.display = titleMatch && categoryMatch ? 'block' : 'none';
+    });
+}
+
+function filterByCategory(event) {
+    categoryItems.forEach(item => item.classList.remove('active'));
+    event.target.classList.add('active');
+    filterGames();
+}
+
+// عملکرد نوار پایین (موقت)
+const bottomBarItems = document.querySelectorAll('.bottom-bar-item');
+bottomBarItems.forEach(item => {
+    item.addEventListener('click', () => {
+        alert(`${item.textContent.trim()} section is under development`);
+    });
+});
+</script>
+
 </body>
 </html>
